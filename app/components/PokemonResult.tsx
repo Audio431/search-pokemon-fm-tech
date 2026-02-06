@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import type { Pokemon } from "@/lib/types";
 import AttackList from "./AttackList";
 import EvolutionChain from "./EvolutionChain";
@@ -15,9 +16,11 @@ export default function PokemonResult({ pokemon, onEvolutionClick }: Props) {
   return (
     <div className="mt-6 border rounded p-4">
       {/* Header */}
-      <img
+      <Image
         src={pokemon.image}
         alt={pokemon.name}
+        width={192}
+        height={192}
         className="w-48 h-48 mx-auto"
       />
       <h2 className="text-2xl font-bold text-center mt-2">

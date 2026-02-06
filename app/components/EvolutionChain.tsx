@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import type { PokemonEvolution } from "@/lib/types";
 // Component to display the evolution chain of a Pokémon
 
@@ -18,9 +19,11 @@ export default function EvolutionChain({ evolutions, onClick }: Props) {
             onClick={() => onClick(evo.name)}
             className="flex flex-col items-center p-3 border rounded hover:bg-blue-50 transition-colors cursor-pointer"
           >
-            <img
+            <Image
               src={evo.image}
               alt={evo.name}
+              width={64}
+              height={64}
               className="w-16 h-16 object-contain"
             />
             <span className="text-xs text-gray-400">#{evo.number}</span>

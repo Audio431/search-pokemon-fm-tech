@@ -1,26 +1,25 @@
 "use client";
-import { useState, useCallback, useEffect, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client/react";
 import { GET_POKEMONS } from "@/lib/queries";
 import type { GetPokemonsData } from "@/lib/types";
 import AutoComplete from "./AutoComplete";
 
+function loadRecentSearches(): string[] {
+  try {
+    return JSON.parse(localStorage.getItem("recentSearches") || "[]");
+  } catch {
+    // localStorage not available (e.g. Safari incognito)
+    return [];
+  }
+}
+
 export default function SearchBar() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [userTyping, setUserTyping] = useState(false);
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
-
-  useEffect(() => {
-    try {
-      const recent = JSON.parse(localStorage.getItem("recentSearches") || "[]");
-      setRecentSearches(recent);
-    } catch {
-      // localStorage not available (e.g. Safari incognito)
-      setRecentSearches([]);
-    }
-  }, []);
+  const [recentSearches, setRecentSearches] = useState<string[]>(loadRecentSearches);
 
   const { data: allData } = useQuery<GetPokemonsData>(GET_POKEMONS);
 
@@ -45,6 +44,7 @@ export default function SearchBar() {
           ...recent.filter((n: string) => n !== formatted),
         ].slice(0, 5);
         localStorage.setItem("recentSearches", JSON.stringify(updated));
+        setRecentSearches(updated);
       } catch {
         // localStorage not available
       }

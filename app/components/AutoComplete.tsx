@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 import type { PokemonSummary } from "@/lib/types";
 // Autocomplete component for selecting Pokémon from suggestions
 
@@ -13,12 +14,16 @@ export default function AutoComplete({ suggestions, onSelect, inputValue }: Prop
   const [show, setShow] = useState(false);
   const [highlightIndex, setHighlightIndex] = useState(-1);
   const listRef = useRef<HTMLUListElement>(null);
+  const [prevInputValue, setPrevInputValue] = useState(inputValue);
+  const [prevSuggestionsLength, setPrevSuggestionsLength] = useState(suggestions.length);
 
-  // Reset highlight when input changes
-  useEffect(() => {
+  // Reset highlight when input or suggestions change (React-recommended pattern)
+  if (inputValue !== prevInputValue || suggestions.length !== prevSuggestionsLength) {
+    setPrevInputValue(inputValue);
+    setPrevSuggestionsLength(suggestions.length);
     setHighlightIndex(-1);
     setShow(suggestions.length > 0);
-  }, [inputValue, suggestions.length]);
+  }
 
   // Scroll highlighted item into view
   useEffect(() => {
@@ -66,7 +71,7 @@ export default function AutoComplete({ suggestions, onSelect, inputValue }: Prop
             i === highlightIndex ? "bg-blue-50" : "hover:bg-gray-50"
           }`}
         >
-          <img src={p.image} alt={p.name} className="w-8 h-8 object-contain" />
+          <Image src={p.image} alt={p.name} width={32} height={32} className="w-8 h-8 object-contain" />
           <span className="text-gray-400 text-sm">#{p.number}</span>
           <span className="font-medium">{p.name}</span>
         </li>
