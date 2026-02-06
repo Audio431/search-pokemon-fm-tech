@@ -30,3 +30,14 @@ export const GET_POKEMON = gql`
     }
   }
 `;
+
+export const GET_POKEMONS = gql`
+  query GetPokemons {
+    pokemons(first: 151) {
+      id
+      name
+      number
+      image
+    }
+  }
+`;

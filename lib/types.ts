@@ -1,7 +1,24 @@
+// === API Response Types ===
+
 export interface Attack {
   name: string;
   type: string;
   damage: number;
+}
+
+export interface PokemonAttack {
+  fast: Attack[];
+  special: Attack[];
+}
+
+export interface PokemonDimension {
+  minimum: string;
+  maximum: string;
+}
+
+export interface PokemonEvolutionRequirement {
+  amount: number;
+  name: string;
 }
 
 export interface PokemonEvolution {
@@ -25,15 +42,23 @@ export interface Pokemon {
   fleeRate: number;
   maxCP: number;
   maxHP: number;
-  weight: { minimum: string; maximum: string };
-  height: { minimum: string; maximum: string };
-  attacks: {
-    fast: Attack[];
-    special: Attack[];
-  };
-  evolutions: PokemonEvolution[] | null;
-  evolutionRequirements: { amount: number; name: string } | null;
+  weight: PokemonDimension;
+  height: PokemonDimension;
+  attacks: PokemonAttack;
+  evolutions: PokemonEvolution[];
+  evolutionRequirements: PokemonEvolutionRequirement | null;
 }
+
+// === Summary type for autocomplete (from pokemons query) ===
+
+export interface PokemonSummary {
+  id: string;
+  number: string;
+  name: string;
+  image: string;
+}
+
+// === Query types ===
 
 export interface GetPokemonData {
   pokemon: Pokemon | null;
@@ -41,4 +66,8 @@ export interface GetPokemonData {
 
 export interface GetPokemonVars {
   name: string;
+}
+
+export interface GetPokemonsData {
+  pokemons: PokemonSummary[];
 }
