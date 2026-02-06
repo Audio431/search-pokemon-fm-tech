@@ -1,41 +1,23 @@
 "use client";
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
-import { useLazyQuery, useQuery } from "@apollo/client/react";
-import { GET_POKEMON, GET_POKEMONS } from "@/lib/queries";
-import type {
-  GetPokemonData,
-  GetPokemonVars,
-  GetPokemonsData,
-  PokemonSummary,
-} from "@/lib/types";
+import { useRouter } from "next/navigation";
+import { useQuery } from "@apollo/client/react";
+import { GET_POKEMONS } from "@/lib/queries";
+import type { GetPokemonsData } from "@/lib/types";
 import AutoComplete from "./AutoComplete";
-import PokemonResult from "./PokemonResult";
 
 export default function SearchBar() {
   const router = useRouter();
-  const searchParams = useSearchParams();
+  const [name, setName] = useState("");
+  const [userTyping, setUserTyping] = useState(false);
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
-  const nameParam = searchParams.get("name") || ""; // Get initial name from URL
-  const [name, setName] = useState(nameParam); // State for input value
-  useEffect(() => {
-    if (nameParam) search({ variables: { name: nameParam } });
-  }, [nameParam]);
-
-  const [userTyping, setUserTyping] = useState(false); // State to track if user is typing
-
-  const [recentSearches, setRecentSearches] = useState<string[]>([]); // State for recent searches
   useEffect(() => {
     const recent = JSON.parse(localStorage.getItem("recentSearches") || "[]");
     setRecentSearches(recent);
   }, []);
 
-  // Fetch all Pokémon for autocomplete suggestions
   const { data: allData } = useQuery<GetPokemonsData>(GET_POKEMONS);
-  const [search, { data, loading, error }] = useLazyQuery<
-    GetPokemonData,
-    GetPokemonVars
-  >(GET_POKEMON);
 
   // Format Pokémon name: capitalize first letter, lowercase the rest
   const formatName = (raw: string) =>
@@ -74,9 +56,6 @@ export default function SearchBar() {
       .filter((p) => p.name.toLowerCase().includes(name.trim().toLowerCase()))
       .slice(0, 8);
   }, [name, allData]);
-
-  // Extract Pokémon data from query result
-  const pokemon = data?.pokemon;
 
 return (
     <div>
