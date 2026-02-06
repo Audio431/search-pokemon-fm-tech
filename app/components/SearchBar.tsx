@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useLazyQuery, useQuery } from "@apollo/client/react";
 import { GET_POKEMON, GET_POKEMONS } from "@/lib/queries";
@@ -15,32 +15,44 @@ import PokemonResult from "./PokemonResult";
 export default function SearchBar() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [name, setName] = useState(searchParams.get("name") || "");
 
+  const nameParam = searchParams.get("name") || ""; // Get initial name from URL
+  const [name, setName] = useState(nameParam); // State for input value
+  useEffect(() => { if (nameParam) search({ variables: { name: nameParam } }); }, [nameParam]);
+
+  const [userTyping, setUserTyping] = useState(false); // State to track if user is typing
+
+  // Fetch all Pokémon for autocomplete suggestions
   const { data: allData } = useQuery<GetPokemonsData>(GET_POKEMONS);
   const [search, { data, loading, error }] = useLazyQuery<
     GetPokemonData,
     GetPokemonVars
   >(GET_POKEMON);
 
+  // Format Pokémon name: capitalize first letter, lowercase the rest
   const formatName = (raw: string) =>
     raw.trim().charAt(0).toUpperCase() + raw.trim().slice(1).toLowerCase();
 
+
+  // Perform search and update URL
   const doSearch = useCallback(
     (pokemonName: string) => {
       const formatted = formatName(pokemonName);
       setName(formatted);
+      setUserTyping(false);
       router.push(`?name=${formatted}`);
       search({ variables: { name: formatted } });
     },
     [router, search]
   );
 
+  // Handle form submission
   const handleSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (name.trim()) doSearch(name);
   };
 
+  // Generate autocomplete suggestions based on input
   const suggestions: PokemonSummary[] =
     name.trim().length > 0 && allData?.pokemons
       ? allData.pokemons
@@ -50,6 +62,7 @@ export default function SearchBar() {
           .slice(0, 8)
       : [];
 
+  // Extract Pokémon data from query result
   const pokemon = data?.pokemon;
 
   return (
@@ -59,13 +72,16 @@ export default function SearchBar() {
           <input
             type="text"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={(e) => {
+              setName(e.target.value);
+              setUserTyping(true);
+            }}
             placeholder="Enter Pokémon name (e.g. Pikachu)"
             className="border rounded px-3 py-2 w-full"
             autoComplete="off"
           />
           <AutoComplete
-            suggestions={suggestions}
+            suggestions={userTyping ? suggestions : []}
             onSelect={(p) => doSearch(p.name)}
             inputValue={name}
           />

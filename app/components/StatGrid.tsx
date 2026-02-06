@@ -1,4 +1,5 @@
 import { Pokemon } from "@/lib/types";
+// Component to display a grid of Pokémon stats in PokemonResult
 
 function StatGrid({ pokemon }: { pokemon: Pokemon }) {
   return (

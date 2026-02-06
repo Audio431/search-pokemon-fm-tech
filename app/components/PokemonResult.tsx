@@ -3,6 +3,7 @@ import AttackList from "./AttackList";
 import EvolutionChain from "./EvolutionChain";
 import StatGrid from "./StatGrid";
 import TagGroup from "./TagGroup";
+// Component to display detailed information about a Pokémon
 
 interface Props {
   pokemon: Pokemon;

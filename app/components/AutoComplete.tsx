@@ -1,6 +1,7 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
 import type { PokemonSummary } from "@/lib/types";
+// Autocomplete component for selecting Pokémon from suggestions
 
 interface Props {
   suggestions: PokemonSummary[];

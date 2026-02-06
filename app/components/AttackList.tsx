@@ -1,4 +1,5 @@
 import type { PokemonAttack, Attack } from "@/lib/types";
+// Component to display list of attacks
 
 function AttackTable({ label, attacks }: { label: string; attacks: Attack[] }) {
     
