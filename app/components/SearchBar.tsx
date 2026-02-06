@@ -41,10 +41,9 @@ export default function SearchBar() {
       const formatted = formatName(pokemonName);
       setName(formatted);
       setUserTyping(false);
-      router.push(`?name=${formatted}`);
-      search({ variables: { name: formatted } });
+      router.push(`/pokemon/${formatted}`);
     },
-    [router, search],
+    [router],
   );
 
   // Handle form submission
