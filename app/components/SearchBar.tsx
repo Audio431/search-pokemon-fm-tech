@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useLazyQuery, useQuery } from "@apollo/client/react";
 import { GET_POKEMON, GET_POKEMONS } from "@/lib/queries";
@@ -18,7 +18,9 @@ export default function SearchBar() {
 
   const nameParam = searchParams.get("name") || ""; // Get initial name from URL
   const [name, setName] = useState(nameParam); // State for input value
-  useEffect(() => { if (nameParam) search({ variables: { name: nameParam } }); }, [nameParam]);
+  useEffect(() => {
+    if (nameParam) search({ variables: { name: nameParam } });
+  }, [nameParam]);
 
   const [userTyping, setUserTyping] = useState(false); // State to track if user is typing
 
@@ -33,7 +35,6 @@ export default function SearchBar() {
   const formatName = (raw: string) =>
     raw.trim().charAt(0).toUpperCase() + raw.trim().slice(1).toLowerCase();
 
-
   // Perform search and update URL
   const doSearch = useCallback(
     (pokemonName: string) => {
@@ -43,7 +44,7 @@ export default function SearchBar() {
       router.push(`?name=${formatted}`);
       search({ variables: { name: formatted } });
     },
-    [router, search]
+    [router, search],
   );
 
   // Handle form submission
@@ -53,14 +54,12 @@ export default function SearchBar() {
   };
 
   // Generate autocomplete suggestions based on input
-  const suggestions: PokemonSummary[] =
-    name.trim().length > 0 && allData?.pokemons
-      ? allData.pokemons
-          .filter((p) =>
-            p.name.toLowerCase().includes(name.trim().toLowerCase())
-          )
-          .slice(0, 8)
-      : [];
+  const suggestions = useMemo(() => {
+    if (!name.trim() || !allData?.pokemons) return [];
+    return allData.pokemons
+      .filter((p) => p.name.toLowerCase().includes(name.trim().toLowerCase()))
+      .slice(0, 8);
+  }, [name, allData]);
 
   // Extract Pokémon data from query result
   const pokemon = data?.pokemon;
@@ -94,7 +93,16 @@ export default function SearchBar() {
         </button>
       </form>
 
-      {loading && <p className="mt-4">Loading...</p>}
+      {/* If no Pokémon found, show message */}
+      {!loading && data && !data.pokemon && (
+        <div className="mt-6 border rounded p-8 text-center">
+          <p className="text-4xl mb-2">❓</p>
+          <h3 className="text-lg font-semibold">Pokémon not found</h3>
+          <p className="text-gray-500 text-sm mt-1">
+            No result for &quot;{name}&quot; — try another name
+          </p>
+        </div>
+      )}
       {error && <p className="mt-4 text-red-500">Pokémon not found.</p>}
 
       {pokemon && (
