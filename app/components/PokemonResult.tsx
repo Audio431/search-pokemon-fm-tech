@@ -1,6 +1,8 @@
 import type { Pokemon } from "@/lib/types";
 import AttackList from "./AttackList";
 import EvolutionChain from "./EvolutionChain";
+import StatGrid from "./StatGrid";
+import TagGroup from "./TagGroup";
 
 interface Props {
   pokemon: Pokemon;
@@ -36,37 +38,13 @@ export default function PokemonResult({ pokemon, onEvolutionClick }: Props) {
         {pokemon.classification}
       </p>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-        <p>Max CP: {pokemon.maxCP}</p>
-        <p>Max HP: {pokemon.maxHP}</p>
-        <p>Weight: {pokemon.weight.minimum} – {pokemon.weight.maximum}</p>
-        <p>Height: {pokemon.height.minimum} – {pokemon.height.maximum}</p>
-        <p>Flee Rate: {pokemon.fleeRate}</p>
-      </div>
+    {/* Stats */}
+    <StatGrid pokemon={pokemon} />
 
       {/* Resistant & Weaknesses */}
       <div className="grid grid-cols-2 gap-4 mt-4 text-sm">
-        <div>
-          <h3 className="font-semibold mb-1">Resistant</h3>
-          <div className="flex flex-wrap gap-1">
-            {pokemon.resistant.map((r) => (
-              <span key={r} className="bg-green-100 rounded px-2 py-0.5 text-xs">
-                {r}
-              </span>
-            ))}
-          </div>
-        </div>
-        <div>
-          <h3 className="font-semibold mb-1">Weaknesses</h3>
-          <div className="flex flex-wrap gap-1">
-            {pokemon.weaknesses.map((w) => (
-              <span key={w} className="bg-red-100 rounded px-2 py-0.5 text-xs">
-                {w}
-              </span>
-            ))}
-          </div>
-        </div>
+        <TagGroup label="Resistant" items={pokemon.resistant} color="bg-green-100" />
+        <TagGroup label="Weaknesses" items={pokemon.weaknesses} color="bg-red-100" />
       </div>
 
       {/* Attacks */}
