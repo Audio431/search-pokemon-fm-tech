@@ -1,3 +1,4 @@
+"use client";
 import type { Pokemon } from "@/lib/types";
 import AttackList from "./AttackList";
 import EvolutionChain from "./EvolutionChain";

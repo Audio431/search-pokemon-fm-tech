@@ -1,3 +1,4 @@
+"use client";
 import type { PokemonEvolution } from "@/lib/types";
 // Component to display the evolution chain of a Pokémon
 

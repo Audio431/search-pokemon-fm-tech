@@ -1,3 +1,4 @@
+"use client";
 // Component to display a group of tags with a label for Pokémon attributes (e.g., Resistant, Weaknesses)
 
 function TagGroup({ label, items, color }: { label: string; items: string[]; color: string }) {

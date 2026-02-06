@@ -1,3 +1,4 @@
+"use client";
 import type { PokemonAttack, Attack } from "@/lib/types";
 // Component to display list of attacks
 
