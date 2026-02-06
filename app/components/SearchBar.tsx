@@ -13,8 +13,13 @@ export default function SearchBar() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
 
   useEffect(() => {
-    const recent = JSON.parse(localStorage.getItem("recentSearches") || "[]");
-    setRecentSearches(recent);
+    try {
+      const recent = JSON.parse(localStorage.getItem("recentSearches") || "[]");
+      setRecentSearches(recent);
+    } catch {
+      // localStorage not available (e.g. Safari incognito)
+      setRecentSearches([]);
+    }
   }, []);
 
   const { data: allData } = useQuery<GetPokemonsData>(GET_POKEMONS);
@@ -31,12 +36,18 @@ export default function SearchBar() {
       setUserTyping(false);
 
       // Update recent searches in localStorage
-      const recent = JSON.parse(localStorage.getItem("recentSearches") || "[]");
-      const updated = [
-        formatted,
-        ...recent.filter((n: string) => n !== formatted),
-      ].slice(0, 5);
-      localStorage.setItem("recentSearches", JSON.stringify(updated));
+      try {
+        const recent = JSON.parse(
+          localStorage.getItem("recentSearches") || "[]",
+        );
+        const updated = [
+          formatted,
+          ...recent.filter((n: string) => n !== formatted),
+        ].slice(0, 5);
+        localStorage.setItem("recentSearches", JSON.stringify(updated));
+      } catch {
+        // localStorage not available
+      }
 
       router.push(`/pokemon/${formatted}`);
     },
@@ -57,7 +68,7 @@ export default function SearchBar() {
       .slice(0, 8);
   }, [name, allData]);
 
-return (
+  return (
     <div>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="relative flex-1">
