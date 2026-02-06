@@ -24,6 +24,12 @@ export default function SearchBar() {
 
   const [userTyping, setUserTyping] = useState(false); // State to track if user is typing
 
+  const [recentSearches, setRecentSearches] = useState<string[]>([]); // State for recent searches
+  useEffect(() => {
+    const recent = JSON.parse(localStorage.getItem("recentSearches") || "[]");
+    setRecentSearches(recent);
+  }, []);
+
   // Fetch all Pokémon for autocomplete suggestions
   const { data: allData } = useQuery<GetPokemonsData>(GET_POKEMONS);
   const [search, { data, loading, error }] = useLazyQuery<
@@ -41,6 +47,15 @@ export default function SearchBar() {
       const formatted = formatName(pokemonName);
       setName(formatted);
       setUserTyping(false);
+
+      // Update recent searches in localStorage
+      const recent = JSON.parse(localStorage.getItem("recentSearches") || "[]");
+      const updated = [
+        formatted,
+        ...recent.filter((n: string) => n !== formatted),
+      ].slice(0, 5);
+      localStorage.setItem("recentSearches", JSON.stringify(updated));
+
       router.push(`/pokemon/${formatted}`);
     },
     [router],
@@ -63,7 +78,7 @@ export default function SearchBar() {
   // Extract Pokémon data from query result
   const pokemon = data?.pokemon;
 
-  return (
+return (
     <div>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <div className="relative flex-1">
@@ -92,21 +107,21 @@ export default function SearchBar() {
         </button>
       </form>
 
-      {/* If no Pokémon found, show message */}
-      {!loading && data && !data.pokemon && (
-        <div className="mt-6 border rounded p-8 text-center">
-          <p className="text-4xl mb-2">❓</p>
-          <h3 className="text-lg font-semibold">Pokémon not found</h3>
-          <p className="text-gray-500 text-sm mt-1">
-            No result for &quot;{name}&quot; — try another name
-          </p>
+      {!name.trim() && recentSearches.length > 0 && (
+        <div className="mt-2 text-sm text-gray-500">
+          <p className="mb-1">Recent:</p>
+          <div className="flex gap-2">
+            {recentSearches.map((r) => (
+              <button
+                key={r}
+                onClick={() => doSearch(r)}
+                className="bg-gray-100 rounded px-2 py-1 hover:bg-gray-200"
+              >
+                {r}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
-      {error && <p className="mt-4 text-red-500">Pokémon not found.</p>}
-
-      {pokemon && (
-        <PokemonResult pokemon={pokemon} onEvolutionClick={doSearch} />
       )}
     </div>
   );
-}
