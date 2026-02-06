@@ -2,10 +2,11 @@
 import { useState } from "react";
 import { useLazyQuery } from "@apollo/client/react";
 import { GET_POKEMON } from "@/lib/queries";
+import type { GetPokemonData, GetPokemonVars } from "@/lib/types";
 
 export default function SearchBar() {
   const [name, setName] = useState("");
-  const [search, { data, loading, error }] = useLazyQuery(GET_POKEMON);
+  const [search, { data, loading, error }] = useLazyQuery<GetPokemonData, GetPokemonVars>(GET_POKEMON);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
